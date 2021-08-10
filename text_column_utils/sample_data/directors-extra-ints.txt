@@ -1,0 +1,13 @@
+Sample
+Header
+1|1|TenNightsBarRoom1|1|Paul Grover|1|
+2|2|YouCantTakeItWithYou|2|John Dameron|2|
+3|3|SixRoomsRiverView|3|Nance Kolhoff|3|
+4|4|SeeHowTheyRun1|4|John Dameron|4|
+5|5|ArsenicOldLace1|5|Peggy Dotson|5|
+6|6|DeadwoodDick|6|John Dameron|6|
+7|7|ThurberCarnival|7|Nance Elizabeth Kolhoff|7|
+8|8|DevilsDisciple|8|Paul Grover|8|
+9|9|BlitheSpirit|9|Eddie Thompson|9|
+190|190|CuriousIncident|190|Peggy Kaney|190|
+191|191|ArsenicOldLace3|191|Mike Phillips|191|
