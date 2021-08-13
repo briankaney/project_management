@@ -27,8 +27,6 @@
     exit(0);
   }
 
-  include 'library_text_columns.php';
-
 //--------------------------------------------------------------------------------------
 //   Read the required args and make sure the one that is the input is a file that 
 //   exists.  Read optional args for number of header lines and delimiter character.
@@ -43,7 +41,17 @@
   }
 
   $num_to_remove = $argv[$argc-1];
-  $header = ReadArgsForHeaderCount($argv,1,$argc-3);
+
+  $header = 0;
+  for($i=1;$i<=$argc-3;++$i)
+  {
+    if(substr($argv[$i],0,3)=="-h=")
+    {
+      $parts  = explode('=',$argv[$i]);
+      $header = $parts[1];
+      break;
+    }
+  }
 
 //--------------------------------------------------------------------------------------
 //   Read in contents of input file
