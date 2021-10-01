@@ -1,0 +1,12 @@
+date
+ls -l
+ls -l sample_data/
+whoami
+grep FILE *.php
+/*
+df
+ls -l /
+*/
+pwd
+//echo "test 1" 
+echo "test"
