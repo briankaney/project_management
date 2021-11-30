@@ -29,7 +29,7 @@
     print "There are a couple of switch options available.  A '-v1' or '-v2' changes how verbose the \n";
     print "output will be.  By default, the output is the stdout stream of each command separated only \n";
     print "by a newline character.  Using '-v1' will add a line of '@' characters as an additional \n";
-    print "divideer.  And '-v2' also prints out each command before it is executes and adds another \n";
+    print "divider.  And '-v2' also prints out each command before it is executes and adds another \n";
     print" divider line of '-' characters.\n\n";
 
     print "The '-r' swtich allows a certain range or subset of lines to be run.  The syntax is '-r=a,b' \n";
@@ -120,7 +120,7 @@
     system("$lines[$i]");
     if($verbosity==2) { print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\n\n"; }
   }
-  if($verbosity==0 || $verbosity==1) { print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"; }
+  if($verbosity==1) { print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"; }
   if($verbosity==2) { print "\n"; }
 
 ?>
