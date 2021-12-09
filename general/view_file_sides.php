@@ -13,8 +13,8 @@
     print "  view_file_sides.php [options] /path/input_file\n\n";
 
     print "Examples:\n";
-    print "  ./view_file_sides.php sample_data/directors.txt\n";
-    print "  ./view_file_sides.php -pos=end -num=10 sample_data/directors.txt\n\n";
+    print "  ./view_file_sides.php sample_data/long_lines.txt\n";
+    print "  ./view_file_sides.php -pos=end -num=10 sample_data/long_lines.txt\n\n";
 
     print "  Simple script to print out a fixed number of characters from the start or end of every line\n";
     print "  of a text file.  User specifies input file and number of characters to print.  Capture output \n";
@@ -42,7 +42,7 @@
   }
 
   $mode = "start";
-  $num_keep = 20;
+  $num_keep = 50;
   for($i=1;$i<=$argc-2;++$i)
   {
     if($argv[$i]=="-pos=end") { $mode = "end"; }
