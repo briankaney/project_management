@@ -10,26 +10,53 @@
   if($argc==1)
   {
     print "\n\nUsage:\n";
-    print "  needs a redo...    ls_listing-create_file_list_for_dir.php in_dir\n\n";
+    print "  create_fl7_for_dir.php input_dir\n\n";
 
     print "Examples:\n";
-    print "  ./ls_listing-create_file_list_for_dir.php path/MyDir\n\n";
+    print "  ./create_fl7_for_dir.php ./\n\n";
 
-    print "  Input a text file captured from running a linux directory listing.  Specifically,\n";
-    print "  a 'ls -R -l --full-time' version of the command.  Script parses through the\n";
-    print "  input, which is in directory blocks with separating lines, and creates a simple\n";
-    print "  output list of one line per file with information in '|' delimited columns.\n";
-    print "  The pipe character allows for file names with spaces to be preserved.\n\n";
+    print "  A system call is made to a recursive linux directory listing command.  Specifically, the\n";
+    print "  a 'ls -R -A -l --full-time' version of the command.  This script parses through the resulting\n";
+    print "  text and outputs a file with some format modifications.  The linux system call output might\n";
+    print "  look something like:\n\n";
+ 
+    print "--------------------------------------------------------\n";   
+    print "sample/:\n";
+    print "total 8\n";
+    print "-rwxr-xr-x 1 bkaney bkaney 4242 2022-03-04 14:35:38.007652700 -0600 one.txt\n";
+    print "drwxr-xr-x 1 bkaney bkaney 4096 2022-03-04 14:38:45.981728400 -0600 work\n\n";
+    print "sample/work:\n";
+    print "total 16\n";
+    print "drwxr-xr-x 1 bkaney bkaney 4096 2022-03-04 14:38:18.936968300 -0600 sub\n";
+    print "-rwxr-xr-x 1 bkaney bkaney 5164 2022-03-04 14:36:13.645950000 -0600 three.jpg\n";
+    print "-rwxr-xr-x 1 bkaney bkaney 4134 2022-03-04 14:36:23.485516000 -0600 two.png\n\n";
+    print "sample/work/sub:\n";
+    print "total 16\n";
+    print "-rwxr-xr-x 1 bkaney bkaney 4949 2022-03-04 14:37:57.519683400 -0600 five.txt\n";
+    print "-rwxr-xr-x 1 bkaney bkaney 6118 2022-03-04 14:37:57.521892800 -0600 four.txt\n";
+    print "--------------------------------------------------------\n\n";   
 
-    print "  The default listing has columns for path, name, file size, file date , file time,\n";
-    print "  and time zone shift.  But there are a couple other options.  The option '-sp=#'\n";
-    print "  (shave path) can removed a fixed number of characters from the start of the path\n";
-    print "  name.  For instance, if every single file path starts with '/mnt/c/User/...', then\n";
-    print "  to save space a portion could be chopped from the start.  The value given is the\n";
-    print "  number of characters to remove.  The '-sc=size' (start column) option will just\n";
-    print "  reorder the columns so the the file size is moved to the front.  Handy for running a\n";
-    print "  'sort -n' to get an output ordered by file size.  The option '-sc=date' is similar\n";
-    print "  but puts the date field first.\n\n";
+    print "  The '-R' switchs means recursive, the '-A' means include all hidden and system entries (except\n";
+    print "  not '.' and '..') and '-l' refers to a longer listing.  The system output is broken into blocks\n";
+    print "  for each sub-directory.  The output of this script 'flattens' that out so each and every line is\n";
+    print "  a unique file.  An empty sub-directory will not appear in the output at all.\n\n";
+
+    print "  The final output has 7 '|' delimited columns ('fl7' refers to file lines seven column output\n";
+    print "  The pipe character usage allows for file names with spaces to be preserved.  The sample linux\n";
+    print "  output above is parsed into the following:\n\n";
+
+    print "--------------------------------------------------------\n";   
+    print "sample/|one.txt|txt|4242|2022-03-04|14:35:38|-0600|\n";
+    print "sample/work/|three.jpg|jpg|5164|2022-03-04|14:36:13|-0600|\n";
+    print "sample/work/|two.png|png|4134|2022-03-04|14:36:23|-0600|\n";
+    print "sample/work/sub/|five.txt|txt|4949|2022-03-04|14:37:57|-0600|\n";
+    print "sample/work/sub/|four.txt|txt|6118|2022-03-04|14:37:57|-0600|\n";
+    print "--------------------------------------------------------\n\n";   
+
+    print "  The columns in order are the full directory path, file name, filename extension, file size,\n";
+    print "  file date, file time (with the fractional seconds truncated), and the time zone shift.\n";
+    print "  The separate column for the file extension is so that the file can be sorted by that field.\n";
+    print "  This script can take a while for a huge file tree.  Capture output via redirect.\n\n";
 
     exit(0);
   }
@@ -46,7 +73,7 @@
 //   Run the dir listing system command.  Parse the response into a string array.
 //--------------------------------------------------------------------------------------
 
-  $response = shell_exec("ls -R -a -l --full-time $in_dir");
+  $response = shell_exec("ls -R -A -l --full-time $in_dir");
   $lines = explode(PHP_EOL,$response);
   $num_lines = count($lines);
 
@@ -97,23 +124,8 @@
 
   for($i=0;$i<$num_files;++$i) {
     $ext = getExtFromFullFilename($names[$i]);
+    $paths[$i] = str_replace("//","/",$paths[$i]);
     print "$paths[$i]|$names[$i]|$ext|$num_bytes[$i]|$file_date[$i]|$file_time[$i]|$zone_shift[$i]|\n";
   }
-
-
-/*-------sample output from the 'ls -R -l --full-time' command--------------------------
-../2009-2011/2009-07-13-us-qvs-draw-code:
-total 0
-drwxrwxrwx 1 bkaney bkaney 4096 2021-07-19 10:42:24.001409800 -0500 .
-drwxrwxrwx 1 bkaney bkaney 4096 2021-07-23 10:14:27.446462000 -0500 ..
-drwxrwxrwx 1 bkaney bkaney 4096 2021-07-20 10:11:40.976952900 -0500 draw_code
-
-../2009-2011/2009-07-13-us-qvs-draw-code/draw_code:
-total 864
-drwxrwxrwx 1 bkaney bkaney  4096 2021-07-20 10:11:40.976952900 -0500 .
-drwxrwxrwx 1 bkaney bkaney  4096 2021-07-19 10:42:24.001409800 -0500 ..
-drwxrwxrwx 1 bkaney bkaney  4096 2008-08-16 12:05:21.000000000 -0500 animation_frames
--rwxrwxrwx 1 bkaney bkaney 16413 2008-06-18 23:16:38.000000000 -0500 draw_diff_binary_prod_map.cc
---------------------------------------------------------------------------------------*/
 
 ?>
