@@ -14,6 +14,7 @@
     print "Examples:\n";
     print "   ./search_fl7_for_duplicate_files.php -m=all_time listing1.txt listing2.txt\n";
     print "   ./search_fl7_for_duplicate_files.php -m=min_sec listing.txt -self\n\n";
+    print "   ./search_fl7_for_duplicate_files.php -o=dir_only listing.txt -self\n\n";
 
     print "  Looks for duplicate files between two input file listings.  These file listings must be\n";
     print "  in the 'fl7' format described elsewhere.  A file can be compared to itself by using the\n"; 
@@ -31,7 +32,7 @@
     print "  later in the list.  But if there is a triplet of the same file it will generate three reports\n";
     print "  (as 1 finds 2, 1 finds 3, and 2 finds 3).  But this is better than six reports.\n\n";
 
-    print "  The one option sets the comparison mode for time fields.  For a match, the file name and number\n";
+    print "  The '-m' option sets the comparison mode for time fields.  For a match, the file name and number\n";
     print "  of bytes must always be the same and just that is the default.  If '-m=all_time' used, then the\n";
     print "  full time stamps must also agree.  The option '-m=min_sec' only requires the minute and second\n";
     print "  fields to match.  This was created since files that moved between machines or storage devices\n";
@@ -39,6 +40,10 @@
     print "  issues.  Even if the file was never edited.  This makes the full time matching too aggressive.\n";
     print "  Using just minutes and seconds gets around this issue.  Using just those two fields is then too\n";
     print "  lenient, but with 3,600 min/sec combos in an hour, the extra matches will be few.\n\n"; 
+
+    print "  The '-o' option sets the output format mode.  The default is fairly verbose - it outputs a\n";
+    print "  a numbered block with the path and filename of both matching files.  The 'dir_only' just outputs\n";
+    print "  the directory only of just the first file in the match.  Just one line per match.\n\n";
 
     exit(0);
   }
@@ -50,11 +55,13 @@
 //--------------------------------------------------------------------------------------
 
   $match_mode = "name_size";
+  $output_mode = "default";
 
   for($i=1;$i<$argc-1;++$i)
   {
-    if($argv[$i]=="-m=all_time") { $match_mode = "name_size_all_time"; }
-    if($argv[$i]=="-m=min_sec")  { $match_mode = "name_size_min_sec";  }
+    if($argv[$i]=="-m=all_time") { $match_mode  = "name_size_all_time"; }
+    if($argv[$i]=="-m=min_sec")  { $match_mode  = "name_size_min_sec";  }
+    if($argv[$i]=="-o=dir_only") { $output_mode = "dir_only";  }
   }
 
 //--------------------------------------------------------------------------------------
@@ -123,8 +130,15 @@
     for($i=0;$i<$num_files1;++$i) {
       for($j=$i+1;$j<$num_files1;++$j) {
         if($names1[$i]==$names1[$j] && $num_bytes1[$i]==$num_bytes1[$j] && $time_compare_str1[$i]==$time_compare_str1[$j]) {
-          $str = $k."\n  ".$paths1[$i].$names1[$i]." ".$num_bytes1[$i]." ".$file_date1[$i]." ".$file_time1[$i].
-                 "\n  ".$paths1[$j].$names1[$j]." ".$num_bytes1[$j]." ".$file_date1[$j]." ".$file_time1[$i];
+
+          if($output_mode=="dir_only") { $str = $paths1[$i]; }
+
+          if($output_mode=="default")
+          {
+            $str = $k."\n  ".$paths1[$i].$names1[$i]." ".$num_bytes1[$i]." ".$file_date1[$i]." ".$file_time1[$i].
+                   "\n  ".$paths1[$j].$names1[$j]." ".$num_bytes1[$j]." ".$file_date1[$j]." ".$file_time1[$i];
+          }
+
           print "$str\n";
           ++$k;
         }
