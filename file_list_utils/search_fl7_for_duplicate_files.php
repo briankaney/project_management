@@ -83,19 +83,13 @@
 //    Open command line and read in contents
 //--------------------------------------------------------------------------------------
 
-//  $output = "pair_list";
-
-//-----------Sample lines from a 'files.txt' format file--------------------------------
-// Sorting/|BackupLog.xlsx|5611358|2019-02-01|10:54:15|-0600|
-// Sorting/Archive-Data-2018-08-02/Bounds-FindSource/|aleutian1802pts.txt|40694|2004-01-19|19:11:52|-0600|
-// Sorting/Archive-Data-2018-08-02/Bounds-FindSource/|clipperton_island2pts.txt|928|2003-06-01|20:13:44|-0500|
-//--------------------------------------------------------------------------------------
-//../2005-03-AmazonStuff/bin/|ncdump||156836|2003-11-06|21:26:11|-0600|
-//../2005-03-AmazonStuff/public_html/Amazon/|contents.cgi|cgi|4410|2003-11-17|16:54:18|-0600|
-//../2005-03-AmazonStuff/public_html/Amazon/|cover.html|html|1904|2003-11-17|17:12:42|-0600|
-//../2005-03-AmazonStuff/public_html/Amazon/|index.html|html|438|2003-11-16|16:17:16|-0600|
-//../2005-03-AmazonStuff/public_html/Amazon/|process_request.cgi|cgi|1269|2003-11-17|17:34:25|-0600|
-//../2005-03-AmazonStuff/public_html/Amazon/cgi-bin/|autoest_daily_map.cgi|cgi|2673|2003-11-12|22:15:55|-0600|
+//-----------Sample lines from a 'fl7.txt' formatted file-------------------------------
+//Sorting/Archive-Data-2018-08-02/Bounds-FindSource/|aleutian1802pts.txt|txt|40694|2004-01-19|19:11:52|-0600|
+//Sorting/Archive-Data-2018-08-02/Bounds-FindSource/|clipperton_island2pts.txt|txt|928|2003-06-01|20:13:44|-0500|
+//2005-03-AmazonStuff/bin/|ncdump||156836|2003-11-06|21:26:11|-0600|
+//2005-03-AmazonStuff/public_html/Amazon/|contents.cgi|cgi|4410|2003-11-17|16:54:18|-0600|
+//2005-03-AmazonStuff/public_html/Amazon/|cover.html|html|1904|2003-11-17|17:12:42|-0600|
+//2005-03-AmazonStuff/public_html/Amazon/|process_request.cgi|cgi|1269|2003-11-17|17:34:25|-0600|
 //--------------------------------------------------------------------------------------
 
   $lines = file($infile1,FILE_IGNORE_NEW_LINES);
@@ -125,12 +119,20 @@
     }
   }
 
-  if($infile2=="-self") {
-    $k = 0;
-    for($i=0;$i<$num_files1;++$i) {
-      for($j=$i+1;$j<$num_files1;++$j) {
-        if($names1[$i]==$names1[$j] && $num_bytes1[$i]==$num_bytes1[$j] && $time_compare_str1[$i]==$time_compare_str1[$j]) {
+//--------------------------------------------------------------------------------------
+//   Do the comparison lookup for the 'self' case.  At the end of the block program 
+//   one is done and the program exits.
+//--------------------------------------------------------------------------------------
 
+  if($infile2=="-self")
+  {
+    $k = 0;
+    for($i=0;$i<$num_files1;++$i)
+    {
+      for($j=$i+1;$j<$num_files1;++$j)
+      {
+        if($names1[$i]==$names1[$j] && $num_bytes1[$i]==$num_bytes1[$j] && $time_compare_str1[$i]==$time_compare_str1[$j])
+        {
           if($output_mode=="dir_only") { $str = $paths1[$i]; }
 
           if($output_mode=="default")
@@ -144,26 +146,14 @@
         }
       }
     }
+    exit(0);
   }
 
-
-//        if($names[$i]==$names[$j] && $num_bytes[$i]==$num_bytes[$j] && $file_time[$i]==$file_time[$j]) {
-//        if($names[$i]==$names[$j] && $num_bytes[$i]==$num_bytes[$j] && $file_min[$i]==$file_min[$j] && $file_sec[$i]==$file_sec[$j]) {
-
-
-
-
-
-
-
-
-
-
-
-
-
 //--------------------------------------------------------------------------------------
-/*
+//   At this point, there must be a second file to compare with file 1.  Open and read 
+//   it the same way.
+//--------------------------------------------------------------------------------------
+
   $lines = file($infile2,FILE_IGNORE_NEW_LINES);
   $num_files2 = count($lines);
 
@@ -172,8 +162,7 @@
   $num_bytes2 = array();
   $file_date2 = array();
   $file_time2 = array();
-  $file_min2  = array();
-  $file_sec2  = array();
+  $time_compare_str2 = array();
 
   for($i=0;$i<$num_files2;++$i) {
     $fields = explode('|',$lines[$i]);
@@ -184,32 +173,37 @@
     $file_date2[$i] = $fields[4];
     $file_time2[$i] = $fields[5];
 
-
-    $parts = explode(':',$file_time2[$i]);
-    $file_min2[$i] = $parts[1];
-    $file_sec2[$i] = $parts[2];
+    if($match_mode=="name_size")          { $time_compare_str2[$i] = ""; }
+    if($match_mode=="name_size_all_time") { $time_compare_str2[$i] = $file_date2[$i]."|".$file_time2[$i]; }
+    if($match_mode=="name_size_min_sec")  {
+      $parts = explode(':',$file_time2[$i]);
+      $time_compare_str2[$i] = $parts[1].":".$parts[2];
+    }
   }
 
 //--------------------------------------------------------------------------------------
-
+//   Do the comparison between the two different file lists.
 //--------------------------------------------------------------------------------------
 
-  $k=0;
+  $k = 0;
   for($i=0;$i<$num_files1;++$i)
   {
     for($j=0;$j<$num_files2;++$j)
     {
-      if($names1[$i]==$names2[$j] && $num_bytes1[$i]==$num_bytes2[$j] && $file_date1[$i]==$file_date2[$j] && $file_min1[$i]==$file_min2[$j] && 
-                  $file_sec1[$i]==$file_sec2[$j])
+      if($names1[$i]==$names2[$j] && $num_bytes1[$i]==$num_bytes2[$j] && $time_compare_str1[$i]==$time_compare_str2[$j])
       {
-//        $str = $k."\n  ".$paths1[$i].$names1[$i]." ".$num_bytes1[$i]." ".$file_date1[$i]."\n  ".$paths2[$j].$names2[$j]." ".$num_bytes2[$j]." ".$file_date2[$j];
-        $str = $names1[$i]."|".$paths1[$i]."|".$num_bytes1[$i]."|".$file_date1[$i]."\n".$names2[$j]."|".$paths2[$j]."|".$num_bytes2[$j]."|".$file_date2[$j];
+        if($output_mode=="dir_only") { $str = $paths1[$i]." - ".$paths2[$j]; }
+
+        if($output_mode=="default")
+        {
+          $str = $k."\n  ".$paths1[$i].$names1[$i]." ".$num_bytes1[$i]." ".$file_date1[$i]." ".$file_time1[$i].
+                 "\n  ".$paths2[$j].$names2[$j]." ".$num_bytes2[$j]." ".$file_date2[$j]." ".$file_time2[$i];
+        }
 
         print "$str\n";
-
         ++$k;
       }
     }
   }
-*/
+
 ?>
