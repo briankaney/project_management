@@ -41,7 +41,7 @@
     print "  for each sub-directory.  The output of this script 'flattens' that out so each and every line is\n";
     print "  a unique file.  An empty sub-directory will not appear in the output at all.\n\n";
 
-    print "  The final output has 7 '|' delimited columns ('fl7' refers to file lines seven column output\n";
+    print "  The final output has 7 '|' delimited columns ('fl7' refers to file lines seven column output).\n";
     print "  The pipe character usage allows for file names with spaces to be preserved.  The sample linux\n";
     print "  output above is parsed into the following:\n\n";
 
