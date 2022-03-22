@@ -111,5 +111,34 @@
   }
 
 //--------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
+
+  function createFlatname($dir,$filename,$style) {
+    if(substr($dir,0,1)==="~") { $dir = substr($dir,1); }
+
+    $dir_str = str_replace('/','__',$dir);
+
+    if($style=="dir_first")  { $ret_str = $dir_str."--".$filename; }
+    if($style=="file_first") { $ret_str = $filename."--".$dir_str; }
+    return $ret_str;
+  }
+
+  function getFileFromFlatname($flat,$style) {
+    $index = strpos($flat,'--');
+
+    if($style=="dir_first")  { $ret_str = substr($flat,$index+2); }
+    if($style=="file_first") { $ret_str = substr($flat,0,$index); }
+    return $ret_str;
+  }
+
+  function getDirFromFlatname($flat,$style) {
+    $index = strpos($flat,'--');
+
+    if($style=="dir_first")  { $ret_str = str_replace('__','/',substr($flat,0,$index)); }
+    if($style=="file_first") { $ret_str = str_replace('__','/',substr($flat,$index+2)); }
+    return $ret_str;
+  }
+
+//--------------------------------------------------------------------------------------
 
 ?>
