@@ -58,6 +58,9 @@
     print "  The separate column for the file extension is so that the file can be sorted by that field.\n";
     print "  This script can take a while for a huge file tree.  Capture output via redirect.\n\n";
 
+    print "  Outputs from multiple runs concatenate well.  Especially, if the directory args used are at\n";
+    print "  the same level.  Can capture multiple outputs via append mode.\n\n";
+
     exit(0);
   }
 

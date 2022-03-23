@@ -1,0 +1,11 @@
+As late as 3/9/22 I was still getting spurious double '/' at the end of some directories.
+Why is this still happening?  What warning can I give in the usage statement.  I thought I 
+supressed this, but maybe I did that even later?
+
+Was not a problem in a more recent (3/22/22) run.
+
+2003-2005//|NC-Webpage-2002Oct15.tar|tar|7567360|2002-10-15|10:17:12|-0500|
+2003-2005//|OK-Webpage-2002Oct15.tar|tar|7229440|2002-10-15|10:16:31|-0500|
+2003-2005/2002-06-11-qpeverif-orig-fang/usr/local/qpeverif/|qpe_ver.config|config|3443|2002-03-07|14:18:03|-0600|
+2003-2005/2002-06-11-qpeverif-orig-fang/usr/local/qpeverif/casedata/|RAW_GAUGE.200202281200|200202281200|18182|2002-03-04|13:50:56|-0600|
+
