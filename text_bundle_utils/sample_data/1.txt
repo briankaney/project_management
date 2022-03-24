@@ -1,0 +1,3 @@
+A short sample file of text.  With 
+just three lines in it.  And no blank 
+lines at the start or end.
