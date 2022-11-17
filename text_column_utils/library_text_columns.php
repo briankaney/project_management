@@ -25,6 +25,7 @@
     {
       if($args[$i]=="-d=comma")  { $delimiter = "comma";  break; }
       if($args[$i]=="-d=spaces") { $delimiter = "spaces"; break; }
+      if($args[$i]=="-d=tab")    { $delimiter = "tab";    break; }
     }
     return $delimiter;
   }
@@ -34,14 +35,26 @@
     if($delimiter=="pipe")   { return "|"; }
     if($delimiter=="comma")  { return ","; }
     if($delimiter=="spaces") { return " "; }
+    if($delimiter=="tab")    { return "\t"; }
     return "";
   }
-
 
 //--------------------------------------------------------------------------------------
 //   Pass in a line array from a full file read and return a 2D array of column fields
 //--------------------------------------------------------------------------------------
 
+  function SplitOneLineToFields($line,$delimiter)
+  {
+    $fields = Array();
+
+    if($delimiter=="spaces") { $fields = preg_split('/ +/',$line); }
+    if($delimiter=="comma")  { $fields = explode(',',$line); }
+    if($delimiter=="pipe")   { $fields = explode('|',$line); }
+    if($delimiter=="tab")    { $fields = explode("\t",$line); }  // single quotes don't work here
+
+    return $fields;
+  }	  
+	
   function SplitLinesToFields($lines,$header_len,$delimiter)
   {
     $fields = Array();
@@ -51,6 +64,7 @@
       if($delimiter=="spaces") { $fields[$i-$header_len] = preg_split('/ +/',$lines[$i]); }
       if($delimiter=="comma")  { $fields[$i-$header_len] = explode(',',$lines[$i]); }
       if($delimiter=="pipe")   { $fields[$i-$header_len] = explode('|',$lines[$i]); }
+      if($delimiter=="tab")    { $fields[$i-$header_len] = explode("\t",$lines[$i]); }  // single quotes don't wor here
     }
 
     return $fields;

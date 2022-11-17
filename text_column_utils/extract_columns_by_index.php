@@ -31,9 +31,9 @@
     print "  Use '-h=3' to specify a number of header lines.  The header section is output, but the extraction action is not\n";
     print "  applied to it.\n\n";
 
-    print "  The default delimiter is the pipe character, but can be changed via '-d=spaces' or '-d=comma'.  If 'spaces' is\n";
-    print "  used file read and write may not be symmetric in that reading counts any number of consecutive spaces as a single\n";
-    print "  delimiter, but always uses a one space char delimiter in output.\n\n";
+    print "  The default delimiter is the pipe character, but can be changed via '-d=spaces', '-d=comma', or '-d=tab'.  If\n";
+    print "  'spaces' is used, file read and write may not be symmetric in that reading counts any number of consecutive\n";
+    print "  spaces as a single delimiter, but always uses a one space char delimiter in output.\n\n";
     exit(0);
   }
 
@@ -59,31 +59,31 @@
   $delimiter_char = GetDelimiterChar($delimiter);
 
 //--------------------------------------------------------------------------------------
-//   Read in contents of input file, extract all column fields, test for consistent
-//   column counts, and finally test user input column indices for being in legal range
+//   Open pointer to input file.  Copy out any header lines.  Then loop through rest of 
+//   file and print out the requested column extraction.
 //--------------------------------------------------------------------------------------
 
-  $lines = file("$infile",FILE_IGNORE_NEW_LINES);
-  $fields = SplitLinesToFields($lines,$header,$delimiter);
-  $num_lines = count($fields);
+  $inf = fopen($infile,'r');
 
-  $num_columns = TestFieldCountConsistency($fields);
-  TestIndicesLegal($extract_index,$num_columns);
-
-//--------------------------------------------------------------------------------------
-//   Go thru input file line by line and extract info for output
-//--------------------------------------------------------------------------------------
-
-  for($i=0;$i<$header;++$i) { print "$lines[$i]\n"; }
-
-  for($i=0;$i<$num_lines;++$i)
+  for($i=0;$i<$header;++$i)
   {
-    $out_str = $fields[$i][$extract_index[0]];
+    $line = fgets($inf);
+    print "$line";
+  }
+
+  while( ($line = fgets($inf)) !== false)
+  {
+    $line = trim($line);  
+    $fields = SplitOneLineToFields($line,$delimiter);
+
+    $out_str = $fields[$extract_index[0]];
     for($j=1;$j<$num_columns_to_extract;++$j)
     {
-      $out_str = $out_str.$delimiter_char.$fields[$i][$extract_index[$j]];
+      $out_str = $out_str.$delimiter_char.$fields[$extract_index[$j]];
     }
-  print "$out_str\n";
+    print "$out_str\n";
   }
+
+  fclose($inf);
 
 ?>
