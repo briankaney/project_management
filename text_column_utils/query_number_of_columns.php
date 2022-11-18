@@ -70,9 +70,6 @@
     print "$line";
   }
 
-//  $lines = file("$infile",FILE_IGNORE_NEW_LINES);
-//  $num_lines = count($lines);
-
 //--------------------------------------------------------------------------------------
 //   Set up and fill array with the column count in each non-header line
 //--------------------------------------------------------------------------------------
@@ -88,25 +85,12 @@
 
   $num_lines = count($num_cols);
 
-//  redo with this:  $fields = SplitLinesToFields($lines,$header_len,$delimiter), what follows is older and needlessly complex.
-/*
-  $num_cols = Array();
-  for($i=$header;$i<$num_lines;++$i)
-  {
-    if($delimiter=="spaces") { $columns = preg_split('/ +/',$lines[$i]); }
-    if($delimiter=="comma")  { $columns = explode(',',$lines[$i]); }
-    if($delimiter=="pipe")   { $columns = explode('|',$lines[$i]); }
-    $num_cols[$i-$header] = count($columns);
-  }
- */
-
 //--------------------------------------------------------------------------------------
 //   Get max, min, and bin counts of the column counts from the last step
 //--------------------------------------------------------------------------------------
 
   $max_col = 0;
   $min_col = 999999;
-//  for($i=0;$i<$num_lines-$header;++$i)
   for($i=0;$i<$num_lines;++$i)
   {
     if($num_cols[$i]>$max_col) { $max_col = $num_cols[$i]; }
@@ -117,7 +101,6 @@
   $num_bins = $max_col-$min_col+1;
   for($i=0;$i<$num_bins;++$i) { $bin_count[$i] = 0; }
   for($i=0;$i<$num_lines;++$i) { ++$bin_count[$num_cols[$i]-$min_col]; }
-//  for($i=0;$i<$num_lines-$header;++$i) { ++$bin_count[$num_cols[$i]-$min_col]; }
 
 //--------------------------------------------------------------------------------------
 //   Get max, min, and bin counts of the column counts from the last step
@@ -126,14 +109,12 @@
   if($mode == "raw") {
     print "\n";
     for($i=0;$i<$num_lines;++$i) { print "$num_cols[$i]\n"; }
-//    for($i=0;$i<$num_lines-$header;++$i) { print "$num_cols[$i]\n"; }
     print "\n";
   }
 
   if($mode == "raw_numbered") {
     print "\n";
     for($i=0;$i<$num_lines;++$i)
-//    for($i=0;$i<$num_lines-$header;++$i)
     {
       $str = sprintf("Line(s) %3d : %4d columns\n",$i+1,$num_cols[$i]);
       print "$str";
