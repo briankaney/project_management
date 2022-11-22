@@ -72,7 +72,7 @@
   $i=0;
   while( ($line = fgets($inf)) !== false)
   {      
-    $line = rtrim($line,"\t");  
+    $line = rtrim($line,"\n");  
     $fields = SplitOneLineToFields($line,$delimiter);
     $num_fields = count($fields);
 

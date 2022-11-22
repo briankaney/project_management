@@ -80,7 +80,7 @@
 
   while( ($line = fgets($inf)) !== false)
   {      
-    $line = rtrim($line,"\t");   // works without this due to sprintf below - but cleaner this way 
+    $line = rtrim($line,"\n");   // works without this due to sprintf below - but cleaner this way 
     $fields = SplitOneLineToFields($line,$delimiter);
     $num_fields = count($fields);
 
