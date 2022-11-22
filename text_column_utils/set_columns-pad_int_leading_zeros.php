@@ -26,8 +26,8 @@
     print "  Use '-h=3' to specify a number of header lines.  The header section is output, but the extraction action is not\n";
     print "  applied to it.\n\n";
 
-    print "  Default delimiter is the pipe character, but can be changed via '-d=spaces' or '-d=comma'.  If 'spaces' is used\n";
-    print "  file read and write may not be symmetric in that reading counts any number of consecutive spaces as a single\n";
+    print "  Default delimiter is the pipe character, but can be changed via '-d=spaces', '-d=comma' or '-d=tab'.  If 'spaces'\n";
+    print "  is used file read and write may not be symmetric in that reading counts any number of consecutive spaces as a single\n";
     print "  delimiter, but always uses one single space as a delimiter in the output.\n\n";
     exit(0);
   }
@@ -58,38 +58,44 @@
     exit(0);
   }
 
+  $max_col_requested = $column_index[$num_columns_to_set-1];
+
   $header = ReadArgsForHeaderCount($argv,1,$argc-4);
   $delimiter = ReadArgsForDelimiter($argv,1,$argc-4);
 
 //--------------------------------------------------------------------------------------
-//   Read in contents of input file
+//   Open input file, skip header lines.
 //--------------------------------------------------------------------------------------
 
-  $lines = file("$infile",FILE_IGNORE_NEW_LINES);
-  $fields = SplitLinesToFields($lines,$header,$delimiter);
-  $num_lines = count($fields);
+  $inf = fopen($infile,'r');
 
-  $num_columns = TestFieldCountConsistency($fields);
-  TestIndicesLegal($column_index,$num_columns);
-
-//--------------------------------------------------------------------------------------
-//   Go thru input file line by line and add leading zero for integer columns requested
-//--------------------------------------------------------------------------------------
-
-  for($i=0;$i<$num_lines;++$i)
+  for($i=0;$i<$header;++$i)
   {
-    for($j=0;$j<$num_columns_to_set;++$j)
-    {
-      $format_str = "%0".$digits[$j]."d";
-      $fields[$i][$column_index[$j]] = sprintf($format_str,$fields[$i][$column_index[$j]]);
-    }
+    $line = fgets($inf);
+    print "$line";
   }
 
 //--------------------------------------------------------------------------------------
-//   Print the output
+//   Loop through input lines, explode into fields, loop through columns, do work
 //--------------------------------------------------------------------------------------
 
-  for($i=0;$i<$header;++$i) { print "$lines[$i]\n"; }
-  PrintFieldsAsOutput($fields,$delimiter);
+  while( ($line = fgets($inf)) !== false)
+  {      
+    $line = trim($line);  
+    $fields = SplitOneLineToFields($line,$delimiter);
+    $num_fields = count($fields);
+
+    if($max_col_requested>=$num_fields) { print "\n\nFatal Error:  Max Column Specified Out Of File Bounds\v\n"; exit(-1); }
+
+    for($i=0;$i<$num_columns_to_set;++$i)
+    {
+      $format_str = "%0".$digits[$i]."d";
+      $fields[$column_index[$i]] = sprintf($format_str,$fields[$column_index[$i]]);
+    }
+
+    PrintOneLineOfFieldsAsOutput($fields,$delimiter);
+  }
+
+  fclose($inf);
 
 ?>
