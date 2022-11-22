@@ -72,6 +72,7 @@
   $i=0;
   while( ($line = fgets($inf)) !== false)
   {      
+    $line = trim($line);  
     $fields = SplitOneLineToFields($line,$delimiter);
     $num_fields = count($fields);
 
@@ -95,5 +96,7 @@
     ++$i;
   }
   print "\n";
+
+  fclose($inf);
 
 ?>

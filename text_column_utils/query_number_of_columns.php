@@ -78,12 +78,15 @@
   $i=0;
   while( ($line = fgets($inf)) !== false)
   {
+    $line = trim($line);  
     $fields = SplitOneLineToFields($line,$delimiter);
     $num_cols[$i] = count($fields);
     ++$i;
   }
 
   $num_lines = count($num_cols);
+
+  fclose($inf);
 
 //--------------------------------------------------------------------------------------
 //   Get max, min, and bin counts of the column counts from the last step
