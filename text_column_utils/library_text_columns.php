@@ -128,6 +128,19 @@
 //   Go thru input file line by line and redo decimal points on float columns requested
 //--------------------------------------------------------------------------------------
 
+  function PrintOneLineOfFieldsAsOutput($fields,$delimiter)
+  {
+    $num_columns=count($fields);
+    $delimiter_char = GetDelimiterChar($delimiter);
+
+    printf("%s",$fields[0]);
+    for($i=1;$i<$num_columns;++$i)
+    {
+      printf("%s%s",$delimiter_char,$fields[$i]);
+    }
+    print "\n";
+  }
+
   function PrintFieldsAsOutput($fields,$delimiter)
   {
     $num_columns=count($fields[0]);

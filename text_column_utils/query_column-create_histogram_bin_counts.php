@@ -24,7 +24,8 @@
     print "Options:\n";
     print "  Use '-h=2' to specify a number of header lines.  The default is zero.  The header section\n";
     print "  is skipped in the analysis.  The default delimiter is the pipe character, but can be changed\n";
-    print "  via '-d=spaces' or '-d=comma'.  One or more consecutive 'spaces' count as one delimiter.\n\n";
+    print "  via '-d=spaces', '-d=comma', or '-d=tab'.  One or more consecutive 'spaces' count as one\n";
+    print "  delimiter.\n\n";
     exit(0);
   }
 
@@ -47,15 +48,16 @@
   $delimiter = ReadArgsForDelimiter($argv,1,$argc-3);
 
 //--------------------------------------------------------------------------------------
-//   Read in contents of input file
+//   Open pointer to input file.  Skip any header lines.
 //--------------------------------------------------------------------------------------
 
-  $lines = file("$infile",FILE_IGNORE_NEW_LINES);
-  $fields = SplitLinesToFields($lines,$header,$delimiter);
-  $num_lines = count($fields);
+  $inf = fopen($infile,'r');
 
-  $num_columns = TestFieldCountConsistency($fields);
-  TestIndicesLegal($column_index,$num_columns);  //--not finished yet
+  for($i=0;$i<$header;++$i)
+  {
+    $line = fgets($inf);
+    print "$line";
+  }
 
 //--------------------------------------------------------------------------------------
 //   Set up array for bin string and count. Seed with the value from the first line.
@@ -63,10 +65,7 @@
 
   $bin_name = Array();
   $bin_count = Array();
-  
-  $bin_name[0] = $fields[0][$column_index];
-  $bin_count[0] = 1;
-  $num_bins = count($bin_name);
+  $num_bins = 0;
 
 //--------------------------------------------------------------------------------------
 //   Step through each line and compare to all the bin strings so far. Either an existing
@@ -74,31 +73,41 @@
 //   name and count pair).
 //--------------------------------------------------------------------------------------
 
-  for($i=1;$i<$num_lines;++$i)
+  $tot = 0;
+  while( ($line = fgets($inf)) !== false)
   {
+    ++$tot;
+    $line = trim($line);  
+    $fields = SplitOneLineToFields($line,$delimiter);
+    $num_fields = count($fields);
+
+    if($column_index>=$num_fields) { print "\n\nFatal Error:  Max Column Specified Out Of File Bounds\v\n"; exit(-1); }
+
     $match_found=false;
-    for($j=0;$j<$num_bins;++$j)
+    for($i=0;$i<$num_bins;++$i)
     {
-      if($fields[$i][$column_index]==$bin_name[$j]) { $match_found=true;  ++$bin_count[$j];  break; }
+      if($fields[$column_index]==$bin_name[$i]) { $match_found=true;  ++$bin_count[$i];  break; }
     }
 
     if($match_found==false)
     {
-      $bin_name[$num_bins] = $fields[$i][$column_index];
+      $bin_name[$num_bins] = $fields[$column_index];
       $bin_count[$num_bins] = 1;
       ++$num_bins;
     }
   }
 
+  fclose($inf);
+
 //--------------------------------------------------------------------------------------
 //   Print output
 //--------------------------------------------------------------------------------------
 
-  print "\n$num_lines Total:\n\n";
+  print "\n$tot Lines Total:\n\n";
 
   for($i=0;$i<$num_bins;++$i)
   {
-    printf("%-30s %4d [%2.1f%%]\n",$bin_name[$i],$bin_count[$i],100*$bin_count[$i]/$num_lines);
+    printf("%-30s %4d [%2.1f%%]\n",$bin_name[$i],$bin_count[$i],100*$bin_count[$i]/$tot);
   }
 
   print "\n";

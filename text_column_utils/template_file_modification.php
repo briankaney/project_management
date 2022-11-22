@@ -22,9 +22,9 @@
     print "  Use '-h=3' to specify a number of header lines.  The header section is output but not otherwise acted upon by\n";
     print "  by this script.  The default value is zero.\n\n";
 
-    print "  Default delimiter is the pipe character, but can be changed via '-d=spaces' or '-d=comma'.  If 'spaces' is used\n";
-    print "  file read and write may not be symmetric in that reading counts any number of consecutive spaces as a single\n";
-    print "  delimiter, but always uses one a one space delimiter in the output.\n\n";
+    print "  Default delimiter is the pipe character, but can be changed via '-d=spaces', '-d=comma', or '-d=tab'.  If\n";
+    print "  'spaces' is used file read and write may not be symmetric in that reading counts any number of consecutive\n";
+    print "  spaces as a single delimiter, but always uses one a one space delimiter in the output.\n\n";
     exit(0);
   }
 
@@ -53,32 +53,37 @@
        //--add other args and processing as needed
 
 //--------------------------------------------------------------------------------------
-//   Read in contents of input file
+//   Open pointer to input file
 //--------------------------------------------------------------------------------------
 
-//---$fields will be a 2d array of lines and columns.
-
-  $lines = file("$infile",FILE_IGNORE_NEW_LINES);
-  $fields = SplitLinesToFields($lines,$header,$delimiter);
-  $num_lines = count($fields);
-
-  $num_columns = TestFieldCountConsistency($fields);
+  $inf = fopen($infile,'r');
 
 //--------------------------------------------------------------------------------------
-//   Do something with file lines
+//   Skip header lines if desired.  Or print to output.
 //--------------------------------------------------------------------------------------
-
-/*
-  for($i=0;$i<$num_lines;++$i)
+  
+  for($i=0;$i<$header;++$i)
   {
+    $line = fgets($inf);
+    print "$line";
   }
-*/
 
 //--------------------------------------------------------------------------------------
-//   Print the output
 //--------------------------------------------------------------------------------------
 
-  for($i=0;$i<$header;++$i) { print "$lines[$i]\n"; }
-  PrintFieldsAsOutput($fields,$delimiter);
+  while( ($line = fgets($inf)) !== false)
+  {
+    $line = trim($line);  
+    $fields = SplitOneLineToFields($line,$delimiter);
+    $num_fields = count($fields);
+
+//--------------------------------------------------------------------------------------
+//   Do something with file line. Maybe print something.s
+//--------------------------------------------------------------------------------------
+
+    PrintOneLineOfFieldsAsOutput($fields,$delimiter);
+  }
+
+  fclose($inf);
 
 ?>
