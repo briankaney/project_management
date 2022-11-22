@@ -54,6 +54,12 @@
   $extract_index = explode(',',$argv[$argc-1]);
   $num_columns_to_extract = count($extract_index);
 
+  $max_col_requested = 0;
+  for($i=0;$i<$num_columns_to_extract;++$i)
+  {
+    if($extract_index[$i]>$max_col_requested) { $max_col_requested=$extract_index[$i]; }
+  }
+
   $header = ReadArgsForHeaderCount($argv,1,$argc-3);
   $delimiter = ReadArgsForDelimiter($argv,1,$argc-3);
   $delimiter_char = GetDelimiterChar($delimiter);
@@ -75,7 +81,10 @@
   {
     $line = trim($line);  
     $fields = SplitOneLineToFields($line,$delimiter);
+    $num_fields = count($fields);
 
+    if($max_col_requested>=$num_fields) { print "\n\nFatal Error:  Max Column Specified Out Of File Bounds\v\n"; exit(-1); }
+    
     $out_str = $fields[$extract_index[0]];
     for($j=1;$j<$num_columns_to_extract;++$j)
     {
