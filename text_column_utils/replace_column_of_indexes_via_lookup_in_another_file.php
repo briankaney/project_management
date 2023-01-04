@@ -10,7 +10,7 @@
   if($argc==1)
   {
     print "\n\nUsage:\n";
-    print "  replace_column_of_indexes_via_lookup_in_another_file.php /path/target_file target_col_index /path/source_file source_col_index source_col_string\n\n";
+    print "  replace_column_of_indexes_via_lookup_in_another_file.php [options] /path/target_file target_col_index /path/source_file source_col_index source_col_string\n\n";
 
     print "Examples:\n";
     print "  ./replace_column_of_indexes_via_lookup_in_another_file.php -d=tab ./orig/medium 3 ./orig/medium_format 0 1\n";
@@ -100,6 +100,7 @@
   $max_array_index = 0;
   while( ($line = fgets($src)) !== false)
   {
+    $line = rtrim($line,"\n");  
     $fields = explode($delimiter_char,$line);  
     $num_fields = count($fields);
 
