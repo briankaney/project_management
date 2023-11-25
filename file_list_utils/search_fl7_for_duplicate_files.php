@@ -197,7 +197,7 @@
         if($output_mode=="default")
         {
           $str = $k."\n  ".$paths1[$i].$names1[$i]." ".$num_bytes1[$i]." ".$file_date1[$i]." ".$file_time1[$i].
-                 "\n  ".$paths2[$j].$names2[$j]." ".$num_bytes2[$j]." ".$file_date2[$j]." ".$file_time2[$i];
+                 "\n  ".$paths2[$j].$names2[$j]." ".$num_bytes2[$j]." ".$file_date2[$j]." ".$file_time2[$j];
         }
 
         print "$str\n";
