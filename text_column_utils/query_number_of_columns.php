@@ -50,12 +50,18 @@
   $delimiter = ReadArgsForDelimiter($argv,1,$argc-2);
   $delimiter_char = GetDelimiterChar($delimiter);
 
-  $mode = "stats";
+  $mode = "stats";  //--Default behavior
 
   for($i=1;$i<=$argc-2;++$i)
   {
-    if($argv[$i]=="-mode=raw")          { $mode = "raw";   break; }
-    if($argv[$i]=="-mode=raw_numbered") { $mode = "raw_numbered"; break; }
+    if($argv[$i]=="-mode=raw")             { $mode = "raw";   break; }
+    if($argv[$i]=="-mode=raw_numbered")    { $mode = "raw_numbered"; break; }
+    if(strpos($argv[$i],"target")===false)
+    {
+      $mode = "target_index"; break;
+      $fields = str_split('_',$argv[$i]);
+      $target_index = $fields[0];
+    }
   }
 
 //--------------------------------------------------------------------------------------
@@ -123,6 +129,14 @@
       print "$str";
     }
     print "\n";
+  }
+
+  if($mode == "target_index") {
+    print "\n";
+    for($i=0;$i<$num_lines;++$i)
+    {
+      if($num_cols[$i]==$target_index) {  print "$i - $lines[$i]\n";;
+    }
   }
 
   if($mode == "stats") {
